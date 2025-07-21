@@ -5,18 +5,26 @@ module.exports = {
   run: async (req, res, mongo_client) => {
     try {
       const collection = mongo_client.db("ArcadeHaven").collection("items");
-      let filter = req.query;
 
-      if (filter.itemId) {
-        filter.itemId = parseInt(filter.itemId);
+      // Only allow filtering by itemId, for example
+      const allowedFilters = {};
+      if (req.query.itemId) {
+        const id = parseInt(req.query.itemId, 10);
+        if (!isNaN(id)) {
+          allowedFilters.itemId = id;
+        }
       }
 
+      // Aggregate pipeline with single project stage (excluding serials.h)
       const items = await collection.aggregate([
-        { $match: filter },
+        { $match: allowedFilters },
         {
           $project: {
             _id: 0,
-            serials: 1,
+            serials: {
+              h: 0,
+              // If you want to include other serial fields, leave as is
+            },
             itemId: 1,
             name: 1,
             creator: 1,
@@ -35,24 +43,18 @@ module.exports = {
             totalQuantity: 1,
           },
         },
-        {
-          $project: {
-            "serials.h": 0,
-          },
-        },
       ]).toArray();
 
       res.status(200).json({
         status: "success",
         data: items,
       });
-
-      } catch (err) {
-        console.error("🔥 API error in GetItem.js:", err);
-          return res.status(500).json({
-          status: "error",
-          error: "Internal server error",
-        });
-      }
+    } catch (err) {
+      console.error("🔥 API error in GetItem.js:", err);
+      return res.status(500).json({
+        status: "error",
+        error: "Internal server error",
+      });
+    }
   },
 };
