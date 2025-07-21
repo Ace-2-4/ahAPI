@@ -47,12 +47,12 @@ module.exports = {
         data: items,
       });
 
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        status: "error",
-        error: "Internal server error",
-      });
-    }
+      } catch (err) {
+        console.error("🔥 API error in GetItem.js:", err);
+          return res.status(500).json({
+          status: "error",
+          error: "Internal server error",
+        });
+      }
   },
 };
