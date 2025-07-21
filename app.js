@@ -2,6 +2,9 @@ require("dotenv").config();
 
 const cluster = require("cluster");
 const numCPUs = require("os").cpus().length;
+const Redis = require("ioredis");
+const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+
 
 if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
