@@ -19,5 +19,6 @@
     "mongodb": "^6.1.0",
     "noblox.js": "^4.15.1",
     "punycode": "^2.3.1"
+    "ioredis": "^5.3.2",
   }
 }
