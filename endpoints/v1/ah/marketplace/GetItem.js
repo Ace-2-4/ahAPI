@@ -1,7 +1,7 @@
 module.exports = {
   path: "",
   method: "GET",
-  Auth: true,
+  Auth: false,
   run: async (req, res, mongo_client) => {
     try {
       const collection = mongo_client.db("ArcadeHaven").collection("items");
