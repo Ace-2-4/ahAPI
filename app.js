@@ -28,7 +28,7 @@ if (cluster.isMaster) {
   const path = require("path");
   const mongodb = require("mongodb");
   const app = express();
-  const port = 3030;
+  const port = process.env.PORT || 3030;
 
   const connection_string = process.env.MONGO_URI;
   const client = new mongodb.MongoClient(connection_string);
