@@ -6,25 +6,22 @@ module.exports = {
     try {
       const collection = mongo_client.db("ArcadeHaven").collection("items");
 
-      // Only allow filtering by itemId, for example
+      // Only allow filtering by itemId for now
       const allowedFilters = {};
       if (req.query.itemId) {
         const id = parseInt(req.query.itemId, 10);
-        if (!isNaN(id)) {
-          allowedFilters.itemId = id;
-        }
+        if (!isNaN(id)) allowedFilters.itemId = id;
       }
 
-      // Aggregate pipeline with single project stage (excluding serials.h)
+      // Properly exclude serials.h field inside the serials object
+      // You gotta do it like this in Mongo projection:
+      // serials.h: 0 means exclude 'h' inside serials subfield
       const items = await collection.aggregate([
         { $match: allowedFilters },
         {
           $project: {
             _id: 0,
-            serials: {
-              h: 0,
-              // If you want to include other serial fields, leave as is
-            },
+            "serials.h": 0,  // exclude only serials.h
             itemId: 1,
             name: 1,
             creator: 1,
